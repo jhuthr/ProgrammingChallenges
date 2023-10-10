@@ -44,29 +44,136 @@ create table campaign_info (
 ## Justin Huther Solution
 Oct 10, 2023
 ```sql
-/* 1. sum of impressions by day */
-SELECT sum(impressions), DATE_FORMAT(date, "%m-%d-%Y") as date_full FROM marketing_data GROUP BY date_full ORDER BY date_full ASC;
+/* 
+1. Sum of impressions by day 
+*/
+SELECT 
+    SUM(impressions) AS total_impressions,
+    DATE_FORMAT(date, "%m-%d-%Y") AS date_full 
+FROM 
+    marketing_data 
+GROUP BY 
+    date_full 
+ORDER BY 
+    date_full ASC;
 
-/* 2.a get the top three revenue-generating states in order of best to worst. */
-SELECT sum(revenue) as revenue_sum, state FROM website_revenue GROUP BY state ORDER BY revenue_sum DESC limit 3;
+/* 
+2.a Get the top three revenue-generating states in order of best to worst 
+*/
+SELECT 
+    SUM(revenue) AS revenue_sum, 
+    state 
+FROM 
+    website_revenue 
+GROUP BY 
+    state 
+ORDER BY 
+    revenue_sum DESC 
+LIMIT 
+    3;
 
-/* 2.b How much revenue did the third best state generate? */
-SELECT sum(revenue) as revenue_sum, state FROM website_revenue GROUP BY state ORDER BY revenue_sum DESC limit 1 offset 2;
+/* 
+2.b How much revenue did the third best state generate? 
+*/
+SELECT 
+    SUM(revenue) AS revenue_sum, 
+    state 
+FROM 
+    website_revenue 
+GROUP BY 
+    state 
+ORDER BY 
+    revenue_sum DESC 
+LIMIT 1 
+OFFSET 2;
 
-/* 3. show total cost, impressions, clicks, and revenue of each campaign. */
-SELECT sum(m.cost) as campaign_cost, sum(m.impressions) as campaign_impressions, sum(m.clicks) as campaign_clicks, sum(w.revenue) as campaign_revenue, c.name as campaign_name FROM marketing_data m, website_revenue w, campaign_info c WHERE m.campaign_id = w.campaign_id AND w.campaign_id = c.id GROUP BY c.name;
+/* 
+3. Show total cost, impressions, clicks, and revenue of each campaign. Include campaign name in the output. 
+*/
+SELECT 
+    SUM(m.cost) AS campaign_cost, 
+    SUM(m.impressions) AS campaign_impressions, 
+    SUM(m.clicks) AS campaign_clicks, 
+    SUM(w.revenue) AS campaign_revenue, 
+    c.name AS campaign_name 
+FROM 
+    marketing_data m 
+JOIN 
+    website_revenue w ON m.campaign_id = w.campaign_id 
+JOIN 
+    campaign_info c ON w.campaign_id = c.id 
+GROUP BY 
+    c.name;
 
-/* 4.a get the number of conversions of Campaign5 by state. */
-SELECT sum(m.conversions) as conversions, m.geo as state FROM marketing_data m, campaign_info c WHERE c.name="Campaign5" AND c.id=m.campaign_id GROUP BY m.geo ORDER BY conversions DESC;
+/* 
+4.a Get the number of conversions of Campaign5 by state 
+*/
+SELECT 
+    SUM(m.conversions) AS conversions, 
+    m.geo AS state 
+FROM 
+    marketing_data m 
+JOIN 
+    campaign_info c ON c.id = m.campaign_id 
+WHERE 
+    c.name = "Campaign5" 
+GROUP BY 
+    m.geo 
+ORDER BY 
+    conversions DESC;
 
-/* 4.b Which state generated the most conversions for this campaign? */
-SELECT sum(m.conversions) as conversions, m.geo as state FROM marketing_data m, campaign_info c WHERE c.name="Campaign5" AND c.id=m.campaign_id GROUP BY m.geo ORDER BY conversions DESC LIMIT 1;
+/* 
+4.b Which state generated the most conversions for this campaign? 
+*/
+SELECT 
+    SUM(m.conversions) AS conversions, 
+    m.geo AS state 
+FROM 
+    marketing_data m 
+JOIN 
+    campaign_info c ON c.id = m.campaign_id 
+WHERE 
+    c.name = "Campaign5" 
+GROUP BY 
+    m.geo 
+ORDER BY 
+    conversions DESC 
+LIMIT 1;
 
-/* 5. Which campaign was the most efficient? */
-SELECT sum(m.cost) as campaign_cost, sum(w.revenue) as campaign_revenue, sum(w.revenue)/sum(m.cost) as campaign_return_on_cost, sum(m.conversions)/sum(m.cost) as campaign_cost_per_conversion, sum(m.clicks)/sum(m.cost) as campaign_cost_per_click, sum(m.impressions)/sum(m.cost) as campaign_cost_per_impression, c.name FROM marketing_data m, website_revenue w, campaign_info c WHERE m.campaign_id=w.campaign_id AND w.campaign_id=c.id GROUP BY w.campaign_id;
+/* 
+5. In your opinion, which campaign was the most efficient, and why? 
+*/
+SELECT 
+    SUM(m.cost) AS campaign_cost, 
+    SUM(w.revenue) AS campaign_revenue, 
+    (SUM(w.revenue) / SUM(m.cost)) AS campaign_return_on_cost, 
+    (SUM(m.conversions) / SUM(m.cost)) AS campaign_cost_per_conversion, 
+    (SUM(m.clicks) / SUM(m.cost)) AS campaign_cost_per_click, 
+    (SUM(m.impressions) / SUM(m.cost)) AS campaign_cost_per_impression, 
+    c.name 
+FROM 
+    marketing_data m 
+JOIN 
+    website_revenue w ON m.campaign_id = w.campaign_id 
+JOIN 
+    campaign_info c ON w.campaign_id = c.id 
+GROUP BY 
+    w.campaign_id;
 
-/* 6. Best day of the week to run ads */
-SELECT DATE_FORMAT(date, "%W") as day_of_week, sum(impressions) as day_of_week_impressions, sum(cost) as day_of_week_cost, sum(impressions)/sum(cost) as impressions_per_dollar FROM marketing_data GROUP BY day_of_week ORDER BY day_of_week_impressions DESC;
+/* 
+6. Showcase the best day of the week to run ads 
+*/
+SELECT 
+    DATE_FORMAT(date, "%W") AS day_of_week, 
+    SUM(impressions) AS day_of_week_impressions, 
+    SUM(cost) AS day_of_week_cost, 
+    (SUM(impressions) / SUM(cost)) AS impressions_per_dollar 
+FROM 
+    marketing_data 
+GROUP BY 
+    day_of_week 
+ORDER BY 
+    day_of_week_impressions DESC;
 ```
 
 ### Analysis:

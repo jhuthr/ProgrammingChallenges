@@ -1,4 +1,5 @@
-# SQL Challenge
+# SQL Challenge Solution - Justin Huther
+Oct 10, 2023
 
 The database contains three tables: `marketing_performance`, `website_revenue`, and `campaign_info`. 
 
@@ -29,13 +30,6 @@ create table campaign_info (
  last_updated_date datetime
 );
 ```
-
-## Challenge Submit Instructions
-1. Fork the repository
-2. Answer the questions below in a single SQL file - e.g `answers.sql`
-3. Provide Link to Forked Repository to PMG Talent Acquisition Team
-4. Please provide a SQL statement for each question
-
 ## Questions
 
 1. Write a query to get the sum of impressions by day.
@@ -47,8 +41,8 @@ create table campaign_info (
 ### Bonus Question
 6. Write a query that showcases the best day of the week (e.g., Sunday, Monday, Tuesday, etc.) to run ads.
 
-## Solution
-
+## Justin Huther Solution
+Oct 10, 2023
 ```sql
 /* 1. sum of impressions by day */
 SELECT sum(impressions), DATE_FORMAT(date, "%m-%d-%Y") as date_full FROM marketing_data GROUP BY date_full ORDER BY date_full ASC;
